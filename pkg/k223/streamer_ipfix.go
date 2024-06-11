@@ -165,7 +165,6 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 					if k8sMatch {
 						s.Config.Interface = iface.Name
 						utils.Logger.Info("detected k8s node interface", zap.String("interface", iface.Name))
-						break
 					}
 
 				}
