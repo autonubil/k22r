@@ -1,0 +1,56 @@
+include:
+  - project: 'exanio/gitlab/ci-templates'
+    ref: main
+    file: '/.gitlab-ci-sonar.yml'
+  - project: 'exanio/gitlab/ci-templates'
+    ref: main
+    file: '/.gitlab-ci-go-build.yml'
+  - project: 'exanio/gitlab/ci-templates'
+    ref: main
+    file: '/.gitlab-ci-docker-release.yml'
+
+default:
+  tags:
+    - autonubil
+    - dev
+
+stages:
+  - validate
+  - go-build
+  - docker-release
+
+build:
+  stage: go-build
+  before_script:
+    - apt-get update || true
+    - apt-get install libpcap-dev  -y
+
+
+
+build_linux_release:
+  stage: go-build
+  before_script:
+    - apt-get update || true
+    - apt-get install libpcap-dev  -y
+
+
+build_windows_release:
+  stage: go-build
+  before_script:
+    - apt-get update || true
+    - apt-get install libpcap-dev  -y
+
+
+build_darwin_release:
+  stage: go-build
+  before_script:
+    - apt-get update || true
+    - apt-get install libpcap-dev  -y
+
+#build_arm_release:
+#  stage: go-build
+#  before_script:
+#    - dpkg --add-architecture arm64 
+#    - apt-get update || true
+#    - apt-get install libpcap-dev:arm64  gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu  -y
+
