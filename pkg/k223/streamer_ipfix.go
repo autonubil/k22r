@@ -111,6 +111,25 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 		return nil, err
 	}
 
+	k8sNodeName := os.Getenv("K8S_NODE_NAME")
+	var k8sNodeAddr net.IP
+	if k8sNodeName != "" {
+		k8sNodeIPs, err := net.LookupHost(k8sNodeName)
+		if err == nil {
+			for _, nodeIp := range k8sNodeIPs {
+				addr := net.ParseIP(nodeIp)
+				if addr == nil {
+					continue
+				}
+				if addr.IsGlobalUnicast() {
+					k8sNodeAddr = addr
+					utils.Logger.Info("detected kubernetes node ip", zap.Stringer("ip", k8sNodeAddr))
+				}
+
+			}
+		}
+	}
+
 	if s.Config.Interface == "" {
 		for _, iface := range interfaces {
 			if iface.Name == "lo" {
@@ -125,8 +144,40 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 
 			addrs, err := iface.Addrs()
 			if err == nil && len(addrs) > 0 {
-				s.Config.Interface = iface.Name
-				break
+				if k8sNodeAddr.IsGlobalUnicast() {
+					k8sMatch := false
+					for _, addr := range addrs {
+						var ip net.IP
+						switch v := addr.(type) {
+						case *net.IPNet:
+							ip = v.IP
+						case *net.IPAddr:
+							ip = v.IP
+						default:
+							continue
+						}
+
+						if k8sNodeAddr.Equal(ip) {
+							k8sMatch = true
+							break
+						}
+					}
+					if k8sMatch {
+						s.Config.Interface = iface.Name
+						utils.Logger.Info("detected k8s node interface", zap.String("interface", iface.Name))
+						break
+					}
+
+				}
+				if strings.HasPrefix(iface.Name, "cni") {
+					s.Config.Interface = iface.Name
+					utils.Logger.Info("detected cni interface", zap.String("interface", iface.Name))
+					break
+				}
+				if s.Config.Interface == "" {
+					s.Config.Interface = iface.Name
+				}
+
 			}
 		}
 	}
