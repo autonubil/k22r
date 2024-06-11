@@ -14,4 +14,4 @@ EXPOSE 9843
 
 ENV SENTRY_DSN=https://7bdf42f8a6a0f6842cdc6a6decaba3b5@sentry.genesis.exanio.cloud/31
 
-ENTRYPOINT ["/codex-rimor", "-c", "/config/k22r.yaml"]
+ENTRYPOINT ["/k22r", "-c", "/config/k22r.yaml"]
