@@ -133,12 +133,15 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 	if s.Config.Interface == "" {
 		for _, iface := range interfaces {
 			if iface.Name == "lo" {
+				utils.Logger.Info("ignoring loopback interface", zap.String("interface", iface.Name))
 				continue
 			}
 			if iface.Flags != iface.Flags|net.FlagUp {
+				utils.Logger.Info("ignoring down interface", zap.String("interface", iface.Name))
 				continue
 			}
 			if strings.HasPrefix(iface.Name, "usb") || strings.HasPrefix(iface.Name, "veth") || strings.HasPrefix(iface.Name, "docker") || strings.HasPrefix(iface.Name, "tun") || strings.HasPrefix(iface.Name, "br-") {
+				utils.Logger.Info("ignoring special interface", zap.String("interface", iface.Name))
 				continue
 			}
 
@@ -156,7 +159,7 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 						default:
 							continue
 						}
-						utils.Logger.Info("checking interface", zap.String("interface", iface.Name), zap.Stringer("ip", ip))
+						utils.Logger.Info("checking interface for k8s node ip", zap.String("interface", iface.Name), zap.Stringer("ip", ip))
 						if k8sNodeAddr.Equal(ip) {
 							k8sMatch = true
 							break
@@ -169,18 +172,19 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 						s.Config.Interface = iface.Name
 						utils.Logger.Info("detected k8s node interface", zap.String("candidate", iface.Name), zap.String("interface", s.Config.Interface))
 					}
-
-					if strings.HasPrefix(iface.Name, "cni") {
-						s.Config.Interface = iface.Name
-						utils.Logger.Info("detected cni interface", zap.String("candidate", iface.Name), zap.String("interface", s.Config.Interface))
-						break
-					}
-					if s.Config.Interface == "" {
-						s.Config.Interface = iface.Name
-						utils.Logger.Info("detected first elegible interface", zap.String("candidate", iface.Name), zap.String("interface", s.Config.Interface))
-					}
+				}
+				if strings.HasPrefix(iface.Name, "cni") {
+					s.Config.Interface = iface.Name
+					utils.Logger.Info("detected cni interface", zap.String("candidate", iface.Name), zap.String("interface", s.Config.Interface))
+					break
+				}
+				if s.Config.Interface == "" {
+					s.Config.Interface = iface.Name
+					utils.Logger.Info("detected first elegible interface", zap.String("candidate", iface.Name), zap.String("interface", s.Config.Interface))
 				}
 
+			} else {
+				utils.Logger.Info("ignoring interface without addresses", zap.String("interface", iface.Name))
 			}
 		}
 	}
