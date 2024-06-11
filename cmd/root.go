@@ -124,7 +124,7 @@ func init() {
 	flags := rootCmd.PersistentFlags()
 
 	flags.BoolVarP(&debug, "debug", "d", false, "Execute in debug mode")
-	flags.StringVarP(&cfgFile, "config", "c", envOrDefault("K22R_CONFIG", "config/k22r.yml"), "Configuration file to use")
+	flags.StringVarP(&cfgFile, "config", "c", envOrDefault("K22R_CONFIG", "config/k22r.yaml"), "Configuration file to use")
 	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "override collector from config")
 
 	flags.StringVar(&cpuprofile, "cpuprofile", "", "write cpu profile to `file`")
