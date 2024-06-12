@@ -91,7 +91,7 @@ metadata:
   labels:
     k8s-app: k22r
   annotations:
-    prometheus.io/port: "9843"
+    prometheus.io/port: "9943"
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
 spec:
@@ -122,7 +122,7 @@ spec:
           - name: K22R_COLLECTOR
             value: elastiflow.opsanio.svc
         ports:
-          - containerPort: 9843
+          - containerPort: 9943
             name: prometheus
 
         resources:
