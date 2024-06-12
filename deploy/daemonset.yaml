@@ -60,6 +60,26 @@ rules:
   verbs:
   - use
 
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k22r
+  namespace: kube-system
+  labels:
+    app: k22r
+spec:
+  jobLabel: k22r
+  selector:
+    matchLabels:
+      k8s-app: k22r
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  podMetricsEndpoints:
+  - port: prometheus
+    path: /metrics
 
 ---
 
@@ -71,8 +91,9 @@ metadata:
   labels:
     k8s-app: k22r
   annotations:
-      prometheus.io/port: "9843"
-      prometheus.io/scrape: "true"
+    prometheus.io/port: "9843"
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     matchLabels:
@@ -100,6 +121,10 @@ spec:
                 fieldPath: spec.nodeName
           - name: K22R_COLLECTOR
             value: elastiflow.opsanio.svc
+        ports:
+          - containerPort: 9843
+            name: prometheus
+
         resources:
           limits:
             memory: 768Mi

@@ -2,13 +2,12 @@ module github.com/autonubil/k22r
 
 go 1.22.0
 
+// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
+// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
+
 // replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => /home/czeumer/src/github.com/autonubil/go-flows
 
-// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
-
-replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => github.com/autonubil/go-flows v0.0.0-20240612154634-aa40bf9a596c
-
-// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
+replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => github.com/autonubil/go-flows v0.0.0-20240612202638-da4b6383d0e1
 
 require (
 	github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456

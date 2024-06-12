@@ -79,23 +79,32 @@ func loadConfig(cfgFile string) (*IpfixStreamerConfig, error) {
 }
 
 // Configure initialize the ingester from configuration
-func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
-	config, err := loadConfig(cfgFile)
-	if err != nil {
-		return nil, err
-	}
+func NewIpfixStreamer() *IpfixStreamer {
 	s := &IpfixStreamer{
-		Config:  config,
-		Verbose: verbose,
+		Config: &IpfixStreamerConfig{
+			Collector:             DEFAULT_COLLECTOR,
+			ObservationDomainId:   1,
+			ObservationDomainName: "",
+			InterfaceName:         "",
+			ActiveTimeout:         300,
+			IdleTimeout:           60,
+			Interval:              300,
+			AllowZero:             false,
+			Bidirectional:         true,
+			CollectorPort:         4739,
+		},
+		Verbose: false,
 	}
 
-	if s.Config.Collector == "" {
-		s.Config.Collector = DEFAULT_COLLECTOR
-	}
+	ipfix.LoadIANASpec()
 
+	return s
+}
+
+func (s *IpfixStreamer) Init() error {
 	names, err := net.DefaultResolver.LookupHost(context.Background(), s.Config.Collector)
 	if err != nil || len(names) == 0 {
-		return nil, fmt.Errorf("could not resolve collector ip: %s", err.Error())
+		return fmt.Errorf("could not resolve collector ip: %s", err.Error())
 	}
 	s.Config.Collector = names[0]
 
@@ -109,7 +118,7 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 
 	interfaces, err := net.Interfaces()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	k8sNodeName := os.Getenv("K8S_NODE_NAME")
@@ -190,7 +199,7 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 	}
 
 	if s.k8sIface == nil {
-		return nil, errors.New("could not autodetect interface to meter")
+		return errors.New("could not autodetect interface to meter")
 	}
 
 	if s.Config.ObservationDomainId == 0 {
@@ -199,8 +208,7 @@ func NewIpfixStreamer(cfgFile string, verbose bool) (*IpfixStreamer, error) {
 	if s.Config.ObservationDomainName == "" {
 		s.Config.ObservationDomainName = DEFAULT_OBJSERVATION_NAME
 	}
-	ipfix.LoadIANASpec()
-	return s, nil
+	return nil
 }
 
 func (s *IpfixStreamer) Stop() error {

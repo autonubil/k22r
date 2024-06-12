@@ -4,6 +4,8 @@ github.com/CN-TU/go-ipfix v0.0.0-20240611191116-e1d5a30c73c3 h1:XQpZrV9wM6as7zzM
 github.com/CN-TU/go-ipfix v0.0.0-20240611191116-e1d5a30c73c3/go.mod h1:rqCCBF/Eaf+sPvt45YJhc36wDlWwtVMKu/ujfD7esxI=
 github.com/autonubil/go-flows v0.0.0-20240612154634-aa40bf9a596c h1:iYiub03E2Gf9B+TkC7mVM+swwfVvpSlwlTxpobPQ5Os=
 github.com/autonubil/go-flows v0.0.0-20240612154634-aa40bf9a596c/go.mod h1:HcXErdEJX9T3YqEH72MLvJjKeBzHpjr+CO1yXHQVezU=
+github.com/autonubil/go-flows v0.0.0-20240612202638-da4b6383d0e1 h1:bem57ta+2lT6ziZpDpTKfjKiPqOqmcqpwi/8aCDQbjU=
+github.com/autonubil/go-flows v0.0.0-20240612202638-da4b6383d0e1/go.mod h1:nGSl5vUdEnCU5lSeI108nBuDUXwY170BZHP2zDWI66U=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=

@@ -52,6 +52,10 @@ type uint64Feature struct {
 	value uint64
 }
 
+func (f *uint64Feature) Stop(reason flows.FlowEndReason, context *flows.EventContext) {
+	f.SetValue(f.value, context, f)
+}
+
 func (f *uint64Feature) IsConstant() bool {
 	return true
 }

@@ -15,8 +15,8 @@
             "showLog": false,
             "env": {
                 "SENTRY_DSN": "https://7bdf42f8a6a0f6842cdc6a6decaba3b5@sentry.genesis.exanio.cloud/31",
-                "xK22R_COLLECTOR": "ipfix.opsanio-elk-mimosa.exanio.net",
-                "K22R_COLLECTOR": "127.0.0.1"
+                "K22R_COLLECTOR": "ipfix.opsanio-elk-mimosa.exanio.net",
+                "xK22R_COLLECTOR": "172.28.212.67"
             }
         }
     ]

@@ -27,11 +27,11 @@ func (cl *CustomLogger) Write(p []byte) (n int, err error) {
 		lvl := string(matches[0][1])
 		msg := strings.TrimSpace(string(matches[0][2]))
 		if lvl == "Warning" {
-			Logger.WithOptions(zap.AddCallerSkip(4)).Log(zap.WarnLevel, msg)
+			Logger.WithOptions(zap.AddCallerSkip(3), zap.AddStacktrace(zap.ErrorLevel)).Log(zap.WarnLevel, msg)
 		} else if lvl == "Error" {
-			Logger.WithOptions(zap.AddCallerSkip(4)).Log(zap.ErrorLevel, msg)
+			Logger.WithOptions(zap.AddCallerSkip(3)).Log(zap.ErrorLevel, msg)
 		} else {
-			Logger.WithOptions(zap.AddCallerSkip(4)).Info(msg)
+			Logger.WithOptions(zap.AddCallerSkip(3)).Info(msg)
 		}
 		return len(p), nil
 	}

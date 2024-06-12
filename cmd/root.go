@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CN-TU/go-ipfix"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
@@ -24,11 +25,12 @@ import (
 
 var (
 	// Build build information
-	cfgFile               string
 	collector             string
 	debug                 bool
 	observationDomainName string
 	observationDomainId   uint64
+	activeTimeout         uint64
+	idleTimeout           uint64
 )
 
 var (
@@ -76,10 +78,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 		// /RUN
-		streamer, err := k22r.NewIpfixStreamer(cfgFile, debug)
-		if err != nil {
-			utils.Logger.Fatal("could not initialize: ", zap.Error(err))
-		}
+		streamer := k22r.NewIpfixStreamer()
 		if collector != "" {
 			streamer.Config.Collector = collector
 		}
@@ -87,8 +86,18 @@ var rootCmd = &cobra.Command{
 		if observationDomainId > 0 {
 			streamer.Config.ObservationDomainId = observationDomainId
 		}
+		if activeTimeout > 0 {
+			streamer.Config.ActiveTimeout = ipfix.DateTimeSeconds(activeTimeout)
+		}
+		if idleTimeout > 0 {
+			streamer.Config.IdleTimeout = ipfix.DateTimeSeconds(idleTimeout)
+		}
 		if observationDomainName != "" {
 			streamer.Config.ObservationDomainName = observationDomainName
+		}
+		err := streamer.Init()
+		if err != nil {
+			utils.Logger.Fatal("could not initialize: ", zap.Error(err))
 		}
 
 		err = streamer.Start()
@@ -142,13 +151,31 @@ func init() {
 		if v, ok := strconv.Atoi(id); ok == nil {
 			defaultId = uint64(v)
 		}
-
 	}
+
+	var dit = uint64(0)
+	it := os.Getenv("K22R_IDLE_TIMEOUT")
+	if it != "" {
+		if v, ok := strconv.Atoi(it); ok == nil {
+			dit = uint64(v)
+		}
+	}
+	var dat = uint64(0)
+	at := os.Getenv("K22R_ACTIVE_TIMEOUT")
+	if at != "" {
+		if v, ok := strconv.Atoi(at); ok == nil {
+			dat = uint64(v)
+		}
+	}
+
 	flags.BoolVarP(&debug, "debug", "d", false, "Execute in debug mode")
-	flags.StringVarP(&cfgFile, "config", "c", envOrDefault("K22R_CONFIG", "config/k22r.yaml"), "Configuration file to use")
+
 	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "target collector")
 	flags.Uint64VarP(&observationDomainId, "observationDomainId", "i", defaultId, "observationDomain id")
 	flags.StringVarP(&observationDomainName, "obeservationDomainName", "n", os.Getenv("K22R_OBSERVATION_DOMAIN_NAME"), "observationDomain id")
+
+	flags.Uint64VarP(&activeTimeout, "activeTimeout", "", dat, "active timeout")
+	flags.Uint64VarP(&idleTimeout, "idleTimeout", "", dit, "idle timeout")
 
 	flags.StringVar(&cpuprofile, "cpuprofile", "", "write cpu profile to `file`")
 	flags.StringVar(&memprofile, "memprofile", "", "write memory profile to `file`")
