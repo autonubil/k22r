@@ -75,11 +75,16 @@ func registerStringFeature(feature, value string) string {
 	if err != nil {
 		log.Panic(err)
 	}
-	ie = ie.Reverse()
-	featureName := feature // + cases.Title(language.English, cases.Compact).String(value)
-	ie.Name = featureName
-	flows.RegisterFeature(ie, featureName, flows.FlowFeature, func() flows.Feature { return &stringFeature{value: value} }, flows.RawPacket)
-	return featureName
+	ie = ipfix.InformationElement{
+		Name:   feature,
+		Pen:    ie.Pen,
+		ID:     ie.ID,
+		Type:   ie.Type,
+		Length: ie.Length,
+	}
+
+	flows.RegisterFeature(ie, feature, flows.FlowFeature, func() flows.Feature { return &stringFeature{value: value} }, flows.RawPacket)
+	return feature
 }
 
 func registerUint64Feature(feature string, value uint64) string {
@@ -87,11 +92,16 @@ func registerUint64Feature(feature string, value uint64) string {
 	if err != nil {
 		log.Panic(err)
 	}
-	ie = ie.Reverse()
-	featureName := feature // + strconv.Itoa(int(value))
-	ie.Name = featureName
-	flows.RegisterFeature(ie, featureName, flows.FlowFeature, func() flows.Feature { return &uint64Feature{value: value} }, flows.RawPacket)
-	return featureName
+	ie = ipfix.InformationElement{
+		Name:   feature,
+		Pen:    ie.Pen,
+		ID:     ie.ID,
+		Type:   ie.Type,
+		Length: ie.Length,
+	}
+
+	flows.RegisterFeature(ie, feature, flows.FlowFeature, func() flows.Feature { return &uint64Feature{value: value} }, flows.RawPacket)
+	return feature
 }
 
 func init() {
