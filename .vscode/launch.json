@@ -5,7 +5,7 @@
             "name": "Launch k22r",
             "asRoot": true,
             "console": "integratedTerminal",
-            "internalConsoleOptions": "openOnSessionStart",
+            // "internalConsoleOptions": "openOnSessionStart",
             "type": "go",
             "mode": "debug",
             "request": "launch",
@@ -15,7 +15,8 @@
             "showLog": false,
             "env": {
                 "SENTRY_DSN": "https://7bdf42f8a6a0f6842cdc6a6decaba3b5@sentry.genesis.exanio.cloud/31",
-                "K22R_COLLECTOR": "ipfix.opsanio-elk-mimosa.exanio.net"
+                "K22R_COLLECTOR": "ipfix.opsanio-elk-mimosa.exanio.net",
+                "xK22R_COLLECTOR": "127.0.0.1"
             }
         }
     ]

@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -16,16 +17,18 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/autonubil/k22r/pkg/build"
-	k22r "github.com/autonubil/k22r/pkg/k223"
+	k22r "github.com/autonubil/k22r/pkg/k22r"
 	"github.com/autonubil/k22r/pkg/utils"
 	"github.com/autonubil/k22r/pkg/zapsentry"
 )
 
 var (
 	// Build build information
-	cfgFile   string
-	collector string
-	debug     bool
+	cfgFile               string
+	collector             string
+	debug                 bool
+	observationDomainName string
+	observationDomainId   uint64
 )
 
 var (
@@ -72,18 +75,28 @@ var rootCmd = &cobra.Command{
 				defer writePrometheusDump()
 			}
 		}
-		// RUN
-
-		utils.Logger.Info("k22r shutdown", zap.Any("build", build.Info))
 		// /RUN
 		streamer, err := k22r.NewIpfixStreamer(cfgFile, debug)
 		if err != nil {
-			log.Fatal("could not initialize: ", err)
+			utils.Logger.Fatal("could not initialize: ", zap.Error(err))
 		}
 		if collector != "" {
 			streamer.Config.Collector = collector
 		}
-		streamer.Start()
+
+		if observationDomainId > 0 {
+			streamer.Config.ObservationDomainId = observationDomainId
+		}
+		if observationDomainName != "" {
+			streamer.Config.ObservationDomainName = observationDomainName
+		}
+
+		err = streamer.Start()
+		if err != nil {
+			utils.Logger.Fatal("streaming failed: ", zap.Error(err))
+		}
+
+		utils.Logger.Info("k22r shutdown", zap.Any("build", build.Info))
 
 		if memprofile != "" {
 			f, err := os.Create(memprofile)
@@ -123,9 +136,19 @@ func envOrDefault(name string, dflt string) string {
 func init() {
 	flags := rootCmd.PersistentFlags()
 
+	id := os.Getenv("K22R_OBSERVATION_DOMAIN_ID")
+	var defaultId uint64 = 8
+	if id != "" {
+		if v, ok := strconv.Atoi(id); ok == nil {
+			defaultId = uint64(v)
+		}
+
+	}
 	flags.BoolVarP(&debug, "debug", "d", false, "Execute in debug mode")
 	flags.StringVarP(&cfgFile, "config", "c", envOrDefault("K22R_CONFIG", "config/k22r.yaml"), "Configuration file to use")
-	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "override collector from config")
+	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "target collector")
+	flags.Uint64VarP(&observationDomainId, "observationDomainId", "i", defaultId, "observationDomain id")
+	flags.StringVarP(&observationDomainName, "obeservationDomainName", "n", os.Getenv("K22R_OBSERVATION_DOMAIN_NAME"), "observationDomain id")
 
 	flags.StringVar(&cpuprofile, "cpuprofile", "", "write cpu profile to `file`")
 	flags.StringVar(&memprofile, "memprofile", "", "write memory profile to `file`")

@@ -2,31 +2,4 @@ collector: localhost
 # see also: https://www.ibm.com/docs/en/npi/1.3.1?topic=versions-ipfix-information-elements
 active_timeout: 60
 idle_timeout: 15
-features:
-  #- ingressInterface
-  #- ingressInterfaceType
-  #- egressInterface
-  #- egressInterfaceType
-  - sourceIPAddress
-  - destinationIPAddress
-  - sourceTransportPort
-  - destinationTransportPort
-  - protocolIdentifier
-  - destinationMacAddress
-  - sourceMacAddress
-  - maximumTTL
-  - flowDirection
-  - flowStartMilliseconds
-  - flowEndMilliseconds
-  - flowEndReason
-  #- octetTotalCount
-  - octetDeltaCount
-  #- packetTotalCount
-  - packetDeltaCount
-bidirectional: false
-key_features:
-  - sourceIPAddress
-  - destinationIPAddress
-  - sourceTransportPort
-  - destinationTransportPort
-  - protocolIdentifier
+bidirectional: true

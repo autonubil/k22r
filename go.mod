@@ -3,15 +3,17 @@ module github.com/autonubil/k22r
 go 1.22.0
 
 // replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => /home/czeumer/src/github.com/autonubil/go-flows
-// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
-replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => github.com/autonubil/go-flows v0.0.0-20240611062210-edf91335d043
 
-replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
+// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
+
+replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => github.com/autonubil/go-flows v0.0.0-20240612154634-aa40bf9a596c
+
+// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
 
 require (
 	github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456
-	github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266
-	github.com/getsentry/sentry-go v0.28.0
+	github.com/CN-TU/go-ipfix v0.0.0-20240611191116-e1d5a30c73c3
+	github.com/getsentry/sentry-go v0.28.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.1
@@ -23,27 +25,15 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
-	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/sagikazarmark/locafero v0.6.0 // indirect
-	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/sourcegraph/conc v0.3.0 // indirect
-	github.com/spf13/afero v1.11.0 // indirect
-	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20240604190554-fc45aab8b7f8 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
-	gopkg.in/ini.v1 v1.67.0 // indirect
 )
