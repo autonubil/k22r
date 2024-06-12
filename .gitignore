@@ -25,5 +25,4 @@ _testmain.go
 # debug and local builds
 __debug_bin
 __debug*
-k22r
-
+/k22r
