@@ -50,12 +50,11 @@ type IpfixStreamerConfig struct {
 	Interval              uint16 `yaml:"interval"`
 	ExpireWindow          bool   `yaml:"expire_window"`
 
-	ActiveTimeout   flows.DateTimeSeconds `yaml:"active_timeout"`
-	IdleTimeout     flows.DateTimeSeconds `yaml:"idle_timeout"`
-	Bidirectional   bool                  `yaml:"bidirectional"`
-	AllowZero       bool                  `yaml:"allow_zero"`
-	ControlFeatures []string              `yaml:"control_features"`
-	FilterFeatures  []string              `yaml:"filter_features"`
+	ActiveTimeout  flows.DateTimeSeconds `yaml:"active_timeout"`
+	IdleTimeout    flows.DateTimeSeconds `yaml:"idle_timeout"`
+	Bidirectional  bool                  `yaml:"bidirectional"`
+	AllowZero      bool                  `yaml:"allow_zero"`
+	FilterFeatures []string              `yaml:"filter_features"`
 }
 
 // Configure initialize the ingester from configuration
@@ -265,7 +264,9 @@ func (s *IpfixStreamer) Start() error {
 	}
 
 	// features = tst
-	err = recordList.AppendRecord(features, s.Config.ControlFeatures, s.Config.FilterFeatures, pipeline, s.Verbose)
+	controlFeatures := []string{"_tcpConnectionClosed"}
+
+	err = recordList.AppendRecord(features, controlFeatures, s.Config.FilterFeatures, pipeline, s.Verbose)
 	if err != nil {
 		return fmt.Errorf("error configuring features %s", err)
 	}

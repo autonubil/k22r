@@ -198,18 +198,60 @@ func (f *tcpControlBits) Event(new interface{}, context *flows.EventContext, src
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+const EVT_FIN = 1
+const EVT_ACK = 2
+
+type tcpConnectionClosed struct {
+	flows.BaseFeature
+	history []byte
+	pos     int
+}
+
+func (f *tcpConnectionClosed) Event(new interface{}, context *flows.EventContext, src interface{}) {
+	tcp := features.GetTCP(new)
+	if tcp == nil {
+		return
+	}
+
+	// server SYN-ACK response - the oposite of what we are looking for
+	if tcp.SYN && tcp.ACK {
+		return
+	}
+
+	if tcp.RST {
+		context.Flow().EOF(context)
+	}
+
+	if tcp.FIN {
+		if f.pos != 0 && f.pos != 2 {
+			f.pos = 0
+		}
+		f.history[f.pos] = EVT_FIN	
+		f.pos++
+	}
+	if tcp.ACK {
+		if f.pos == 0 || f.pos == 2 {
+			f.pos = 0
+			return
+		}
+		f.history[f.pos] = EVT_ACK
+		f.pos++
+	}
+	if f.pos > 3 {
+		context.Flow().Export(flows.FlowEndReasonEnd, context, context.When())
+	}
+}
+
 func init() {
 	flows.RegisterStandardFeature("tcpControlBits", flows.FlowFeature, func() flows.Feature { return &tcpControlBits{} }, flows.RawPacket)
-	// flows.RegisterCustomFunction("const", "returns the first arg as const", resolveConst, flows.FlowFeature, func() flows.Feature { return &constant{} }, flows.Const)
-	// flows.RegisterTypedFunction("interfaceName", "interface name", ipfix.StringType, 0, flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.Const)
-
 	flows.RegisterStandardFeature("packetDeltaCount", flows.FlowFeature, func() flows.Feature { return &packetDeltaCountPacket{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("octetDeltaCount", flows.FlowFeature, func() flows.Feature { return &octetDeltaCountPacket{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("tcpOptions", flows.FlowFeature, func() flows.Feature { return &tcpOptions{} }, flows.RawPacket)
 
-	// flows.RegisterCustomFunction("ingressInterface", "", resolveConst, flows.FlowFeature, func() flows.Feature { return &interfaceFeature{} }, flows.FlowFeature)
-	// flows.RegisterStandardFeature("interfaceName", flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.Const)
-	// flows.RegisterCustomFunction("interfaceName", "", resolveConst, flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.FlowFeature)
+	flows.RegisterControlFeature("_tcpConnectionClosed", "abort flow if tcp connection is done", func() flows.Feature { return &tcpConnectionClosed{pos: 0, history: make([]byte, 4)} })
+
 }
 
 // TODO:
