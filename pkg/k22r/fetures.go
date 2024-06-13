@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/CN-TU/go-flows/flows"
+	"github.com/CN-TU/go-flows/modules/features"
 	"github.com/CN-TU/go-flows/packet"
 	"github.com/CN-TU/go-ipfix"
 )
@@ -108,14 +109,61 @@ func registerUint64Feature(feature string, value uint64) string {
 	return feature
 }
 
+type tcpOptions struct {
+	flows.BaseFeature
+}
+
+/*
+CP options in packets of this Flow. The information is encoded in a set of bit fields.
+For each TCP option, there is a bit in this set. The bit is set to 1 if any observed packet of this Flow contains the corresponding TCP option.
+Otherwise, if no observed packet of this Flow contains the respective TCP option, the value of the corresponding bit is 0.
+
+Options are mapped to bits according to their option numbers. TCP option Kind 0 corresponds to the least-significant bit in the tcpOptionsFull IE while Kind 255 corresponds to the most-significant bit of the IE.
+This approach allows an observer to export any observed TCP option even if it does support that option and without requiring updating a mapping table.
+
+The value of tcpOptionsFull IE may be encoded in fewer octets per the guidelines in Section 6.2 of [RFC7011].
+
+The presence of tcpSharedOptionExID16List or tcpSharedOptionExID32List IEs is an indication that a shared TCP option (Kind=253 or 254) is observed in a Flow.
+The presence of tcpSharedOptionExID16List or tcpSharedOptionExID32List IEs takes precedence over setting the corresponding bits in the tcpOptionsFull IE for the same Flow.
+In order to optimize the use of the reduced-size encoding in the presence of tcpSharedOptionExID16List or tcpSharedOptionExID32List IEs,
+the Exporter MUST NOT set to 1 the shared TCP options (Kind=253 or 254) flags of the tcpOptionsFull IE that is reported for the same Flow.
+
+	ptions are mapped to bits according to their option numbers. Option number X is mapped to bit X.
+
+TCP option numbers are maintained by IANA.
+*/
+func (f *tcpOptions) Event(new interface{}, context *flows.EventContext, src interface{}) {
+	tcp := features.GetTCP(new)
+	if tcp == nil {
+		return
+	}
+	var val uint64
+	raw := f.Value()
+	if raw != nil {
+		val = raw.(uint64)
+	}
+	for _, opt := range tcp.Options {
+		val |= (1 << uint64(opt.OptionType))
+	}
+	f.SetValue(val, context, f)
+}
+
+func init() {
+}
+
 func init() {
 	// flows.RegisterCustomFunction("const", "returns the first arg as const", resolveConst, flows.FlowFeature, func() flows.Feature { return &constant{} }, flows.Const)
 	// flows.RegisterTypedFunction("interfaceName", "interface name", ipfix.StringType, 0, flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.Const)
 
 	flows.RegisterStandardFeature("packetDeltaCount", flows.FlowFeature, func() flows.Feature { return &packetDeltaCountPacket{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("octetDeltaCount", flows.FlowFeature, func() flows.Feature { return &octetDeltaCountPacket{} }, flows.RawPacket)
+	flows.RegisterStandardFeature("tcpOptions", flows.FlowFeature, func() flows.Feature { return &tcpOptions{} }, flows.RawPacket)
 
 	// flows.RegisterCustomFunction("ingressInterface", "", resolveConst, flows.FlowFeature, func() flows.Feature { return &interfaceFeature{} }, flows.FlowFeature)
 	// flows.RegisterStandardFeature("interfaceName", flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.Const)
 	// flows.RegisterCustomFunction("interfaceName", "", resolveConst, flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.FlowFeature)
 }
+
+// TODO:
+// bgpNextHopIPv4Address
+// bgpNextHopIPv6Address

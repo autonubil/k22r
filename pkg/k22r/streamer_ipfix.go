@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"strconv"
@@ -21,18 +20,15 @@ import (
 	_ "github.com/CN-TU/go-flows/modules/sources/libpcap"
 	"github.com/CN-TU/go-flows/packet"
 	"github.com/CN-TU/go-ipfix"
-	"github.com/autonubil/k22r/pkg/build"
 	"github.com/autonubil/k22r/pkg/utils"
-	"github.com/autonubil/k22r/pkg/zapsentry"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
 const DEFAULT_COLLECTOR = "elastiflow.opsanio.svc" // TODO: LOCALHOST
 const DEFAULT_OBJSERVATION_ID = 8
 const DEFAULT_OBJSERVATION_NAME = "kubernetes"
 
-var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL"}
+var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL", "tcpOptions"}
 var DEFAULT_KEY_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier"} // the five tuple
 
 // NatsIngester pseudo ingestor to dump results
@@ -60,22 +56,6 @@ type IpfixStreamerConfig struct {
 	AllowZero       bool                  `yaml:"allow_zero"`
 	ControlFeatures []string              `yaml:"control_features"`
 	FilterFeatures  []string              `yaml:"filter_features"`
-}
-
-func loadConfig(cfgFile string) (*IpfixStreamerConfig, error) {
-	config := &IpfixStreamerConfig{}
-	yamlFile, err := os.ReadFile(cfgFile)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-		return nil, err
-	}
-	err = yaml.Unmarshal(yamlFile, config)
-	if err != nil {
-		return nil, err
-	}
-
-	zapsentry.InitWithSecondStream(build.Info.Release(), "")
-	return config, nil
 }
 
 // Configure initialize the ingester from configuration
