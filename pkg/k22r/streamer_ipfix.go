@@ -28,7 +28,7 @@ const DEFAULT_COLLECTOR = "elastiflow.opsanio.svc" // TODO: LOCALHOST
 const DEFAULT_OBJSERVATION_ID = 8
 const DEFAULT_OBJSERVATION_NAME = "kubernetes"
 
-var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL", "tcpOptions"}
+var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL", "tcpOptions", "tcpControlBits"}
 var DEFAULT_KEY_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier"} // the five tuple
 
 // NatsIngester pseudo ingestor to dump results

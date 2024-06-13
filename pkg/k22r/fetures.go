@@ -143,15 +143,63 @@ func (f *tcpOptions) Event(new interface{}, context *flows.EventContext, src int
 		val = raw.(uint64)
 	}
 	for _, opt := range tcp.Options {
-		val |= (1 << uint64(opt.OptionType))
+		optId := uint64(opt.OptionType)
+		val |= (1 << (65 - optId))
 	}
 	f.SetValue(val, context, f)
 }
 
-func init() {
+////////////////////////////////////////////////////////////////////////////////
+
+type tcpControlBits struct {
+	flows.BaseFeature
+}
+
+func (f *tcpControlBits) Event(new interface{}, context *flows.EventContext, src interface{}) {
+	var value uint16
+	tcp := features.GetTCP(new)
+	if tcp == nil {
+		return
+	}
+	if tcp.FIN {
+		value += 1 << 0
+	}
+	if tcp.SYN {
+		value += 1 << 1
+	}
+	if tcp.RST {
+		value += 1 << 2
+	}
+	if tcp.PSH {
+		value += 1 << 3
+	}
+	if tcp.ACK {
+		value += 1 << 4
+	}
+	if tcp.URG {
+		value += 1 << 5
+	}
+	if tcp.ECE {
+		value += 1 << 6
+	}
+	if tcp.CWR {
+		value += 1 << 7
+	}
+	if tcp.NS {
+		value += 1 << 8
+	}
+
+	raw := f.Value()
+	if raw != nil {
+		val := raw.(uint16)
+		f.SetValue(value|val, context, f)
+	} else {
+		f.SetValue(value, context, f)
+	}
 }
 
 func init() {
+	flows.RegisterStandardFeature("tcpControlBits", flows.FlowFeature, func() flows.Feature { return &tcpControlBits{} }, flows.RawPacket)
 	// flows.RegisterCustomFunction("const", "returns the first arg as const", resolveConst, flows.FlowFeature, func() flows.Feature { return &constant{} }, flows.Const)
 	// flows.RegisterTypedFunction("interfaceName", "interface name", ipfix.StringType, 0, flows.FlowFeature, func() flows.Feature { return &interfaceNameFeature{} }, flows.Const)
 
