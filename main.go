@@ -9,22 +9,22 @@ import (
 )
 
 var (
-	Version = "dev"
-	Commit  = "none"
-	Date    = "unknown"
-	BuiltBy = "unknown"
+	Version   = "dev"
+	Commit    = "none"
+	BuildDate = "unknown"
+	BuildBy   = "unknown"
 )
 
 func main() {
-	if Date == "unknown" {
-		Date = time.Now().Format(time.RFC3339)
+	if BuildDate == "unknown" {
+		BuildDate = time.Now().Format(time.RFC3339)
 	}
-	if BuiltBy == "unknown" {
+	if BuildBy == "unknown" {
 		user, err := user.Current()
 		if err == nil {
-			BuiltBy = user.Name
+			BuildBy = user.Name
 		}
 	}
-	build.Info = build.NewBuildInfo(Version, Commit, Date, BuiltBy)
+	build.Info = build.NewBuildInfo(Version, Commit, BuildDate, BuildBy)
 	cmd.Execute()
 }

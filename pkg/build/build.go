@@ -12,15 +12,15 @@ var (
 
 // BuildInfo build information
 type BuildInfo struct {
-	Version string
-	Commit  string
-	Date    string
-	BuiltBy string
+	Version   string
+	Commit    string
+	BuildDate string
+	BuildBy   string
 }
 
 // NewBuildInfo create new build information
-func NewBuildInfo(version, commit, date, builtBy string) BuildInfo {
-	return BuildInfo{version, commit, date, builtBy}
+func NewBuildInfo(version, commit, date, buildBy string) BuildInfo {
+	return BuildInfo{version, commit, date, buildBy}
 }
 
 // Release get release to be used with sentry
