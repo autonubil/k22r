@@ -181,7 +181,7 @@ func init() {
 	flags.StringVar(&memprofile, "memprofile", "", "write memory profile to `file`")
 	flags.BoolVar(&blockprofile, "blockprofile", false, "gather blocking information")
 
-	flags.Int32Var(&prometheusPort, "prometheus-port", 9843, "prometheus metrics are publish here ")
+	flags.Int32Var(&prometheusPort, "prometheus-port", 9943, "prometheus metrics are publish here ")
 	flags.BoolVar(&prometheusEnabled, "prometheus-enabled", true, "export prometheus metrics")
 	flags.BoolVar(&prometheusDump, "prometheus-dump", false, "dump prometheus metrics after run")
 
