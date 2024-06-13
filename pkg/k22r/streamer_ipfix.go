@@ -33,7 +33,7 @@ const DEFAULT_OBJSERVATION_ID = 8
 const DEFAULT_OBJSERVATION_NAME = "kubernetes"
 
 var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL"}
-var DEFAULT_KEY_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier"}
+var DEFAULT_KEY_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier"} // the five tuple
 
 // NatsIngester pseudo ingestor to dump results
 type IpfixStreamer struct {
@@ -232,7 +232,12 @@ func (s *IpfixStreamer) Start() error {
 	exp.Init()
 	var src packet.Source
 
-	_, src, err = packet.MakeSource("libpcap", []string{"-live", "-promisc", s.k8sIface.Name})
+	capFilter, err := s.initFilter()
+	if err != nil {
+		return fmt.Errorf("error creating exporter '%s': %s", "ipfix", err)
+	}
+
+	_, src, err = packet.MakeSource("libpcap", []string{"-live", "-promisc", s.k8sIface.Name, "-filter", capFilter})
 	if err != nil {
 		return fmt.Errorf("error creating source '%s': %s", "libpcap", err)
 	}
@@ -251,6 +256,7 @@ func (s *IpfixStreamer) Start() error {
 	// var control, filter, key []string
 	// var bidirectional, allowZero bool
 	var filters packet.Filters
+
 	// features, control, filter, key, bidirectional, allowZero, opts = decodeSimple(s.Config.Preprocessor, 0)
 
 	pipeline, err := flows.MakeExportPipeline([]flows.Exporter{exp}, flows.SortTypeNone, numProcessing)
@@ -298,7 +304,7 @@ func (s *IpfixStreamer) Start() error {
 
 	engine := packet.NewEngine(int(maxPacket), flowtable, filters, sources, labels)
 
-	utils.Logger.Info("ipfix started", zap.String("source", s.k8sIface.Name), zap.String("target", s.Config.Collector))
+	utils.Logger.Info("ipfix started", zap.String("source", s.k8sIface.Name), zap.String("target", s.Config.Collector), zap.Uint16("target_port", s.Config.CollectorPort))
 	recordList.Init()
 
 	// recordList.CallGraph(os.Stdout)
@@ -332,4 +338,27 @@ func (s *IpfixStreamer) Start() error {
 	s.cancel = nil
 	utils.Logger.Info("done streaming")
 	return err
+}
+
+func (s *IpfixStreamer) initFilter() (string, error) {
+	addrs, err := s.k8sIface.Addrs()
+	if err == nil && len(addrs) > 0 {
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			default:
+				continue
+			}
+			if ip.IsGlobalUnicast() {
+				_, nodeSubnet, _ := net.ParseCIDR(ip.String() + "/24")
+				_, clusterSubnet, _ := net.ParseCIDR(ip.String() + "/16")
+				return fmt.Sprintf("not (dst net %s) or (dst net %s)", clusterSubnet, nodeSubnet), nil
+			}
+		}
+	}
+	return "", errors.New("no elegible ip found")
 }
