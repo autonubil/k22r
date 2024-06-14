@@ -31,6 +31,9 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/tsg/gopacket v0.0.0-20200626092518-2ab8e397a786
+	github.com/vishvananda/netlink v1.1.0 // indirect
+	github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect

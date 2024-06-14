@@ -251,9 +251,10 @@ func (s *IpfixStreamer) Start() error {
 
 	features = append(features, registerUint64Feature("flowActiveTimeout", uint64(s.Config.ActiveTimeout)))
 	features = append(features, registerUint64Feature("flowIdleTimeout", uint64(s.Config.IdleTimeout)))
-
-	features = append(features, registerStringFeature("interfaceName", s.k8sIface.Name))
+	// features = append(features, registerStringFeature("interfaceName", s.k8sIface.Name))
+	features = append(features, "interfaceName")
 	features = append(features, registerUint64Feature("ingressInterface", uint64(s.k8sIface.Index)))
+
 	/* Sent with each package
 	if s.Config.ObservationDomainId > 0 {
 		features = append(features, registerUint64Feature("observationDomainId", s.Config.ObservationDomainId))

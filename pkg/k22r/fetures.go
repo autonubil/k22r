@@ -2,11 +2,14 @@ package k22r
 
 import (
 	"log"
+	"net"
 
 	"github.com/CN-TU/go-flows/flows"
 	"github.com/CN-TU/go-flows/modules/features"
 	"github.com/CN-TU/go-flows/packet"
 	"github.com/CN-TU/go-ipfix"
+	"github.com/google/gopacket/layers"
+	"github.com/vishvananda/netlink"
 )
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -228,7 +231,7 @@ func (f *tcpConnectionClosed) Event(new interface{}, context *flows.EventContext
 		if f.pos != 0 && f.pos != 2 {
 			f.pos = 0
 		}
-		f.history[f.pos] = EVT_FIN	
+		f.history[f.pos] = EVT_FIN
 		f.pos++
 	}
 	if tcp.ACK {
@@ -244,11 +247,109 @@ func (f *tcpConnectionClosed) Event(new interface{}, context *flows.EventContext
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+type interfaceInfo struct {
+	name  string
+	vlan  int
+	index int
+}
+
+type interfaceProperty struct {
+	flows.BaseFeature
+	resolved bool
+	typ      InterfacePropertyType
+	byMac    map[string]*interfaceInfo
+}
+
+type InterfacePropertyType int
+
+const (
+	_ InterfacePropertyType = iota
+	InterfacePropertyTypeName
+	InterfacePropertyTypeVLAN
+	InterfacePropertyTypeIndex
+)
+
+func newInterfaceProperty(typ InterfacePropertyType) flows.Feature {
+	f := &interfaceProperty{
+		typ:   typ,
+		byMac: make(map[string]*interfaceInfo),
+	}
+	f.init()
+	return f
+}
+func (f *interfaceProperty) init() error {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return err
+	}
+	for _, inf := range interfaces {
+		if len(inf.HardwareAddr) == 0 {
+			continue
+		}
+		info := interfaceInfo{
+			name:  inf.Name,
+			index: inf.Index,
+		}
+		link, err := netlink.LinkByName(inf.Name)
+		if err == nil {
+			vlanLinks, err := netlink.LinkList()
+			if err == nil {
+				for _, vlanLink := range vlanLinks {
+					// Type assertion to check if the link is a VLAN link
+					vlan, ok := vlanLink.(*netlink.Vlan)
+					if ok && vlan.ParentIndex == link.Attrs().Index {
+						info.vlan = vlan.VlanId
+					}
+				}
+			}
+		}
+		f.byMac[string(inf.HardwareAddr)] = &info
+	}
+	return nil
+}
+
+func (f *interfaceProperty) Start(ctx *flows.EventContext) {
+	f.BaseFeature.Start(ctx)
+	f.resolved = false
+}
+
+func (f *interfaceProperty) Event(new interface{}, context *flows.EventContext, src interface{}) {
+	if f.resolved {
+		return
+	}
+	f.resolved = true
+	if eth, ok := new.(packet.Buffer).LinkLayer().(*layers.Ethernet); ok {
+		var inf *interfaceInfo
+		var ok bool
+		if inf, ok = f.byMac[string(eth.SrcMAC)]; !ok {
+			if inf, ok = f.byMac[string(eth.DstMAC)]; !ok {
+				return
+			}
+		}
+		switch f.typ {
+		case InterfacePropertyTypeName:
+			f.SetValue(inf.name, context, f)
+		case InterfacePropertyTypeIndex:
+			f.SetValue(uint64(inf.index), context, f)
+		case InterfacePropertyTypeVLAN:
+			if inf.vlan != 0 {
+				f.SetValue(uint64(inf.vlan), context, f)
+			}
+		}
+	}
+
+}
+
 func init() {
 	flows.RegisterStandardFeature("tcpControlBits", flows.FlowFeature, func() flows.Feature { return &tcpControlBits{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("packetDeltaCount", flows.FlowFeature, func() flows.Feature { return &packetDeltaCountPacket{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("octetDeltaCount", flows.FlowFeature, func() flows.Feature { return &octetDeltaCountPacket{} }, flows.RawPacket)
 	flows.RegisterStandardFeature("tcpOptions", flows.FlowFeature, func() flows.Feature { return &tcpOptions{} }, flows.RawPacket)
+	flows.RegisterStandardFeature("interfaceName", flows.FlowFeature, func() flows.Feature { return newInterfaceProperty(InterfacePropertyTypeName) }, flows.RawPacket)
+	flows.RegisterStandardFeature("ingressInterface", flows.FlowFeature, func() flows.Feature { return newInterfaceProperty(InterfacePropertyTypeIndex) }, flows.RawPacket)
+	flows.RegisterStandardFeature("vlanId", flows.FlowFeature, func() flows.Feature { return newInterfaceProperty(InterfacePropertyTypeVLAN) }, flows.RawPacket)
 
 	flows.RegisterControlFeature("_tcpConnectionClosed", "abort flow if tcp connection is done", func() flows.Feature { return &tcpConnectionClosed{pos: 0, history: make([]byte, 4)} })
 
