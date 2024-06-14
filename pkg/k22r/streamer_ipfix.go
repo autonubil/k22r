@@ -49,6 +49,7 @@ type IpfixStreamerConfig struct {
 	InterfaceName         string `yaml:"interface"`
 	Interval              uint16 `yaml:"interval"`
 	ExpireWindow          bool   `yaml:"expire_window"`
+	ExporterIp            string `yaml:"exporter_ip"`
 
 	ActiveTimeout  flows.DateTimeSeconds `yaml:"active_timeout"`
 	IdleTimeout    flows.DateTimeSeconds `yaml:"idle_timeout"`
@@ -285,14 +286,18 @@ func (s *IpfixStreamer) Start() error {
 		flows.DateTimeNanoseconds(flowExpire)*flows.SecondsInNanoseconds, keyselector, autoGC)
 
 	engine := packet.NewEngine(int(maxPacket), flowtable, filters, sources, labels)
-
-	utils.Logger.Info("ipfix started", zap.String("source", s.k8sIface.Name), zap.String("target", s.Config.Collector), zap.Uint16("target_port", s.Config.CollectorPort))
 	recordList.Init()
 
-	// recordList.CallGraph(os.Stdout)
+	// start exporter Nat?
+	if s.Config.ExporterIp != "" {
+		//cfg := NewMasqConfig(true)
+		//daemon := NewMasqDaemon(cfg)
+		//daemon.Run()
+	}
 
 	var stopped flows.DateTimeNanoseconds
 	go func() {
+		utils.Logger.Info("ipfix started", zap.String("source", s.k8sIface.Name), zap.String("target", s.Config.Collector), zap.Uint16("target_port", s.Config.CollectorPort))
 		stopped = engine.Run()
 		engine.Finish()
 		flowtable.EOF(stopped)
@@ -305,6 +310,9 @@ func (s *IpfixStreamer) Start() error {
 		select {
 		case <-s.cancel:
 			engine.Stop()
+			if s.Config.ExporterIp != "" {
+				//daemon.Stop()
+			}
 			done = true
 		case <-time.After(30 * time.Second):
 			/*

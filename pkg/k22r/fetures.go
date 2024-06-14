@@ -284,15 +284,18 @@ func (f *interfaceProperty) init() error {
 	if err != nil {
 		return err
 	}
-	for _, inf := range interfaces {
-		if len(inf.HardwareAddr) == 0 {
+	for _, iface := range interfaces {
+		if len(iface.HardwareAddr) == 0 {
+			continue
+		}
+		if iface.Flags != iface.Flags|net.FlagUp {
 			continue
 		}
 		info := interfaceInfo{
-			name:  inf.Name,
-			index: inf.Index,
+			name:  iface.Name,
+			index: iface.Index,
 		}
-		link, err := netlink.LinkByName(inf.Name)
+		link, err := netlink.LinkByName(iface.Name)
 		if err == nil {
 			vlanLinks, err := netlink.LinkList()
 			if err == nil {
@@ -305,7 +308,7 @@ func (f *interfaceProperty) init() error {
 				}
 			}
 		}
-		f.byMac[string(inf.HardwareAddr)] = &info
+		f.byMac[string(iface.HardwareAddr)] = &info
 	}
 	return nil
 }

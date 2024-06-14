@@ -31,6 +31,7 @@ var (
 	observationDomainId   uint64
 	activeTimeout         uint64
 	idleTimeout           uint64
+	exporterIp            string
 )
 
 var (
@@ -95,6 +96,10 @@ var rootCmd = &cobra.Command{
 		if observationDomainName != "" {
 			streamer.Config.ObservationDomainName = observationDomainName
 		}
+		if exporterIp != "" {
+			streamer.Config.ExporterIp = exporterIp
+		}
+
 		err := streamer.Init()
 		if err != nil {
 			utils.Logger.Fatal("could not initialize: ", zap.Error(err))
@@ -173,6 +178,7 @@ func init() {
 	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "target collector")
 	flags.Uint64VarP(&observationDomainId, "observationDomainId", "i", defaultId, "observationDomain id")
 	flags.StringVarP(&observationDomainName, "obeservationDomainName", "n", os.Getenv("K22R_OBSERVATION_DOMAIN_NAME"), "observationDomain id")
+	flags.StringVarP(&exporterIp, "exporterIp", "", os.Getenv("K22R_EXPORTER_IP"), "observationDomain id")
 
 	flags.Uint64VarP(&activeTimeout, "activeTimeout", "", dat, "active timeout")
 	flags.Uint64VarP(&idleTimeout, "idleTimeout", "", dit, "idle timeout")
