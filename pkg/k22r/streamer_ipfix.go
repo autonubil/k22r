@@ -25,8 +25,8 @@ import (
 )
 
 const DEFAULT_COLLECTOR = "elastiflow.opsanio.svc" // TODO: LOCALHOST
-const DEFAULT_OBJSERVATION_ID = 8
-const DEFAULT_OBJSERVATION_NAME = "kubernetes"
+const DEFAULT_OBSERVATION_ID = 8
+const DEFAULT_OBSERVATION_NAME = "kubernetes"
 
 var DEFAULT_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier", "destinationMacAddress", "sourceMacAddress", "flowDirection", "flowStartMilliseconds", "flowEndMilliseconds", "flowEndReason", "octetDeltaCount", "packetDeltaCount", "minimumTTL", "maximumTTL", "tcpOptions", "tcpControlBits"}
 var DEFAULT_KEY_FEATURES = []string{"sourceIPAddress", "destinationIPAddress", "sourceTransportPort", "destinationTransportPort", "protocolIdentifier"} // the five tuple
@@ -46,6 +46,7 @@ type IpfixStreamerConfig struct {
 	CollectorPort         uint16 `yaml:"collector_port"`
 	ObservationDomainId   uint64 `yaml:"observation_domain_id"`
 	ObservationDomainName string `yaml:"observation_domain_name"`
+	GroupName             string `yaml:"group_name"`
 	InterfaceName         string `yaml:"interface"`
 	Interval              uint16 `yaml:"interval"`
 	ExpireWindow          bool   `yaml:"expire_window"`
@@ -65,6 +66,7 @@ func NewIpfixStreamer() *IpfixStreamer {
 			Collector:             DEFAULT_COLLECTOR,
 			ObservationDomainId:   1,
 			ObservationDomainName: "",
+			GroupName:             "",
 			InterfaceName:         "",
 			ActiveTimeout:         300,
 			IdleTimeout:           60,
@@ -183,10 +185,7 @@ func (s *IpfixStreamer) Init() error {
 	}
 
 	if s.Config.ObservationDomainId == 0 {
-		s.Config.ObservationDomainId = DEFAULT_OBJSERVATION_ID
-	}
-	if s.Config.ObservationDomainName == "" {
-		s.Config.ObservationDomainName = DEFAULT_OBJSERVATION_NAME
+		s.Config.ObservationDomainId = DEFAULT_OBSERVATION_ID
 	}
 	return nil
 }
@@ -263,6 +262,12 @@ func (s *IpfixStreamer) Start() error {
 	*/
 	if s.Config.ObservationDomainName != "" {
 		features = append(features, registerStringFeature("observationDomainName", s.Config.ObservationDomainName))
+	}
+
+	// used to identify clusters
+	if s.Config.GroupName != "" {
+		features = append(features, registerStringFeature("applicationSubCategoryName", "kubernetes"))
+		features = append(features, registerStringFeature("applicationGroupName", s.Config.GroupName))
 	}
 
 	// features = tst

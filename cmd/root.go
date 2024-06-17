@@ -28,6 +28,7 @@ var (
 	collector             string
 	debug                 bool
 	observationDomainName string
+	groupName             string
 	observationDomainId   uint64
 	activeTimeout         uint64
 	idleTimeout           uint64
@@ -95,6 +96,9 @@ var rootCmd = &cobra.Command{
 		}
 		if observationDomainName != "" {
 			streamer.Config.ObservationDomainName = observationDomainName
+		}
+		if groupName != "" {
+			streamer.Config.GroupName = groupName
 		}
 		if exporterIp != "" {
 			streamer.Config.ExporterIp = exporterIp
@@ -175,21 +179,22 @@ func init() {
 
 	flags.BoolVarP(&debug, "debug", "d", false, "Execute in debug mode")
 
-	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "target collector")
-	flags.Uint64VarP(&observationDomainId, "observationDomainId", "i", defaultId, "observationDomain id")
-	flags.StringVarP(&observationDomainName, "obeservationDomainName", "n", os.Getenv("K22R_OBSERVATION_DOMAIN_NAME"), "observationDomain id")
-	flags.StringVarP(&exporterIp, "exporterIp", "", os.Getenv("K22R_EXPORTER_IP"), "observationDomain id")
+	flags.StringVarP(&collector, "collector", "t", os.Getenv("K22R_COLLECTOR"), "IPFIX target collector address")
+	flags.Uint64VarP(&observationDomainId, "observationDomainId", "i", defaultId, "Observation domain identifier")
+	flags.StringVarP(&observationDomainName, "observationDomainName", "n", os.Getenv("K22R_OBSERVATION_DOMAIN_NAME"), "Observation domain name")
+	flags.StringVarP(&groupName, "groupName", "g", os.Getenv("K22R_GROUP_NAME"), "Group name (useful for distinguishing clusters)")
+	flags.StringVarP(&exporterIp, "exporterIp", "e", os.Getenv("K22R_EXPORTER_IP"), "Exporter IP address")
 
-	flags.Uint64VarP(&activeTimeout, "activeTimeout", "", dat, "active timeout")
-	flags.Uint64VarP(&idleTimeout, "idleTimeout", "", dit, "idle timeout")
+	flags.Uint64VarP(&activeTimeout, "activeTimeout", "a", dat, "Active flow timeout duration in seconds")
+	flags.Uint64VarP(&idleTimeout, "idleTimeout", "d", dit, "Idle flow timeout duration in seconds")
 
-	flags.StringVar(&cpuprofile, "cpuprofile", "", "write cpu profile to `file`")
-	flags.StringVar(&memprofile, "memprofile", "", "write memory profile to `file`")
-	flags.BoolVar(&blockprofile, "blockprofile", false, "gather blocking information")
+	flags.StringVar(&cpuprofile, "cpuprofile", "", "Write CPU profile to the specified file")
+	flags.StringVar(&memprofile, "memprofile", "", "Write memory profile to the specified file")
+	flags.BoolVar(&blockprofile, "blockprofile", false, "Enable blocking profile")
 
-	flags.Int32Var(&prometheusPort, "prometheus-port", 9943, "prometheus metrics are publish here ")
-	flags.BoolVar(&prometheusEnabled, "prometheus-enabled", true, "export prometheus metrics")
-	flags.BoolVar(&prometheusDump, "prometheus-dump", false, "dump prometheus metrics after run")
+	flags.Int32Var(&prometheusPort, "prometheus-port", 9943, "Port for Prometheus metrics")
+	flags.BoolVar(&prometheusEnabled, "prometheus-enabled", true, "Enable Prometheus metrics export")
+	flags.BoolVar(&prometheusDump, "prometheus-dump", false, "Dump Prometheus metrics after execution")
 
 	cobra.OnInitialize(initModule)
 }
