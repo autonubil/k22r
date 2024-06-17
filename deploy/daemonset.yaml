@@ -126,6 +126,8 @@ spec:
                 fieldPath: spec.nodeName
           - name: K22R_COLLECTOR
             value: elastiflow.opsanio.svc
+          - name: K22R_GROUP_NAME
+            value: opsanio
         ports:
           - containerPort: 9943
             name: prometheus

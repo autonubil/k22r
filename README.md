@@ -74,8 +74,8 @@ k22r uses the following parameters and environment variables:
 - `--observationDomainName`, `-n`: Sets the observation domain name.
 - `--groupName`, `-g`: Sets the group name, useful for distinguishing clusters.
 - `--exporterIp`, `-e`: Sets the exporter IP address.
-- `--activeTimeout`, `-a`: Specifies the active flow timeout duration in seconds.
-- `--idleTimeout`, `-d`: Specifies the idle flow timeout duration in seconds.
+- `--activeTimeout`: Specifies the active flow timeout duration in seconds.
+- `--idleTimeout`: Specifies the idle flow timeout duration in seconds.
 - `--cpuprofile`: Writes CPU profile to the specified file.
 - `--memprofile`: Writes memory profile to the specified file.
 - `--blockprofile`: Enables blocking profile.
@@ -94,9 +94,13 @@ k22r --collector "192.168.1.100:4739" --observationDomainId 1234 --observationDo
 - `K22R_OBSERVATION_DOMAIN_NAME`: Can be used to set the observation domain name.
 - `K22R_GROUP_NAME`: Can be used to set the group name.
 - `K22R_EXPORTER_IP`: Can be used to set the exporter IP address.
+- `K22R_IDLE_TIMEOUT`: Can be used to set the flow idle timeout.
+- `K22R_ACTIVE_TIMEOUT`: Can be used to set the flow active timeout.
 
 Example:
 ```bash
+export K22R_IDLE_TIMEOUT=360
+export K22R_ACTIVE_TIMEOUT=60
 export K22R_COLLECTOR="192.168.1.100:4739"
 export K22R_OBSERVATION_DOMAIN_NAME="domain1"
 export K22R_GROUP_NAME="cluster1"

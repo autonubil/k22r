@@ -185,8 +185,8 @@ func init() {
 	flags.StringVarP(&groupName, "groupName", "g", os.Getenv("K22R_GROUP_NAME"), "Group name (useful for distinguishing clusters)")
 	flags.StringVarP(&exporterIp, "exporterIp", "e", os.Getenv("K22R_EXPORTER_IP"), "Exporter IP address")
 
-	flags.Uint64VarP(&activeTimeout, "activeTimeout", "a", dat, "Active flow timeout duration in seconds")
-	flags.Uint64VarP(&idleTimeout, "idleTimeout", "d", dit, "Idle flow timeout duration in seconds")
+	flags.Uint64VarP(&activeTimeout, "activeTimeout", "", dat, "Active flow timeout duration in seconds")
+	flags.Uint64VarP(&idleTimeout, "idleTimeout", "", dit, "Idle flow timeout duration in seconds")
 
 	flags.StringVar(&cpuprofile, "cpuprofile", "", "Write CPU profile to the specified file")
 	flags.StringVar(&memprofile, "memprofile", "", "Write memory profile to the specified file")
