@@ -129,8 +129,5 @@ Please ensure your code adheres to our coding standards and includes appropriate
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to customize the sections further to fit specific details and additional instructions relevant to your project.
+This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
+ 
