@@ -2,10 +2,7 @@ module github.com/autonubil/k22r
 
 go 1.22
 
-// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
-// replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
-
-// replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => /home/czeumer/src/github.com/autonubil/go-flows
+toolchain go1.22.4
 
 replace github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456 => github.com/autonubil/go-flows v0.0.0-20240612202638-da4b6383d0e1
 
@@ -18,15 +15,13 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/spf13/cobra v1.8.1
 	go.uber.org/zap v1.27.0
-	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.30.2
-	k8s.io/component-base v0.29.1
 	k8s.io/kubernetes v1.30.2
 	k8s.io/utils v0.0.0-20240502163921-fe8a2dddb1d0
 )
 
 require (
 	github.com/go-logr/logr v1.4.2 // indirect
+	k8s.io/apimachinery v0.30.2 // indirect
 	k8s.io/klog/v2 v2.130.0 // indirect
 )
 
@@ -40,7 +35,6 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
-	github.com/tsg/gopacket v0.0.0-20200626092518-2ab8e397a786
 	github.com/vishvananda/netlink v1.1.0
 	github.com/vishvananda/netns v0.0.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

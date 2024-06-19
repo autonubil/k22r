@@ -27,6 +27,7 @@ var (
 	// Build build information
 	collector             string
 	debug                 bool
+	showVersionAndExit    bool
 	observationDomainName string
 	groupName             string
 	observationDomainId   uint64
@@ -58,6 +59,9 @@ var rootCmd = &cobra.Command{
 	Short: "KubernetesIpfixExporter",
 	Long:  `export k8s cluster internal ip traffic as ipfix`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if showVersionAndExit {
+			return 
+		}
 		// Profiling
 		if cpuprofile != "" {
 			f, err := os.Create(cpuprofile)
@@ -176,6 +180,8 @@ func init() {
 			dat = uint64(v)
 		}
 	}
+
+	flags.BoolVarP(&showVersionAndExit, "version", "v", false, "Show version and exit")
 
 	flags.BoolVarP(&debug, "debug", "d", false, "Execute in debug mode")
 
