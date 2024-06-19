@@ -5,7 +5,7 @@ ARG CI_REGISTRY
 LABEL maintainer="carsten.zeumer@autonubil.de"
 
 
-COPY k22r /k22r --chmod=0755
+COPY --chmod=0755 k22r /k22r
 
 RUN apt-get update && apt-get install  ca-certificates libpcap0.8 -y && apt-get clean autoclean && apt-get autoremove --yes && rm -rf /var/lib/{apt,dpkg,cache,log}/ && update-ca-certificates
 
