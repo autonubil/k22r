@@ -6,41 +6,6 @@ metadata:
   namespace: kube-system
 
 ---
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: k22r-psp
-spec:
-  hostNetwork: true
-  allowPrivilegeEscalation: false
-  hostPID: false
-  privileged: false
-  allowedUnsafeSysctls:
-    - net.ipv4.ip_nonlocal_bind
-    - net.ipv4.vs.conntrack
-  allowedCapabilities:
-    - NET_ADMIN
-    - NET_RAW
-  defaultAddCapabilities:
-    - NET_ADMIN
-    - NET_RAW
-  fsGroup:
-    rule: RunAsAny
-  runAsUser:
-    rule: RunAsAny
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  volumes:
-  - configMap
-  - downwardAPI
-  - emptyDir
-  - secret
-  - projected
-  - hostPath
-
----
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -114,7 +79,7 @@ spec:
       - operator: Exists
       containers:
       - name: k22r
-        image: docker.autonubil.net/opsanio/k22r
+        image: ghcr.io/autonubil/k22r:latest
         imagePullPolicy: Always
         securityContext:
           capabilities:
