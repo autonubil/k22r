@@ -1,13 +1,15 @@
-Here's the extended README with additional information about parameters and environment variables from the `root.go` file:
-
----
-
 # k22r - Kubernetes IPFIX Exporter
 
 k22r is a Kubernetes IPFIX Exporter that facilitates the collection and export of network flow information from a Kubernetes cluster using IPFIX (IP Flow Information Export) protocol.
 
-## Table of Contents
 
+
+[![GitHub license](https://img.shields.io/github/license/xanzy/go-gitlab.svg)](https://github.com/autonubil/k22r/blob/master/LICENSE)
+[![Sourcegraph](https://sourcegraph.com/github.com/autonubil/go-wazuh/-/badge.svg)](https://sourcegraph.com/github.com/autonubil/k22r?badge)
+[![GoDoc](https://godoc.org/github.com/autonubil/go-wazuh?status.svg)](https://godoc.org/github.com/autonubil/k22r)
+
+## Table of Contents
+   
 - [k22r - Kubernetes IPFIX Exporter](#k22r---kubernetes-ipfix-exporter)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
