@@ -40,7 +40,7 @@ jobs:
       run: go mod download
 
     - name: Build the Go application amd64
-      run: GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -X main.Version=${GITHUB_REF_NAME} -X main.BuildDate=$(date --iso-8601=seconds) -X main.Commit=$CI_COMMIT_SHA -X main.BuildBy=$GITHUB_ACTOR" -o k22r ./
+      run: GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -X main.Version=${GITHUB_REF_NAME} -X main.BuildDate=$(date --iso-8601=seconds) -X main.Commit=$GITHUB_SHA -X main.BuildBy=$GITHUB_ACTOR" -o k22r ./
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
