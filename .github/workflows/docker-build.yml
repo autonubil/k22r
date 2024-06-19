@@ -34,7 +34,7 @@ jobs:
           ${{ runner.os }}-go-
 
     - name: Install pcap
-      run:  apt-get update || apt-get install libpcap-dev  -y
+      run:  sudo apt-get update && sudo apt-get install libpcap-dev  -y
 
     - name: Install dependencies
       run: go mod download
