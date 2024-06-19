@@ -66,8 +66,8 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ secrets.DOCKER_USERNAME }}/k22r:latest
+        tags: ghcr.io/${{ github.repository_owner }}/k22r:latest
 
     - name: Verify Docker image
       run: |
-        docker run --rm ${{ secrets.DOCKER_USERNAME }}/k22r:latest k22r --version
+        docker run --rm ${{ github.repository_owner }}/k22r:latest k22r --version
