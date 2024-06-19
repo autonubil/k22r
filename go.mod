@@ -1,6 +1,6 @@
 module github.com/autonubil/k22r
 
-go 1.22.0
+go 1.22
 
 // replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => /home/czeumer/src/github.com/autonubil/go-ipfix
 // replace github.com/CN-TU/go-ipfix v0.0.0-20190708151352-9d85a86dd266 => github.com/autonubil/go-ipfix v0.0.0-20240611060248-9b4d9b50d438
