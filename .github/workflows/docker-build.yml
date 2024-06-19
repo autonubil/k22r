@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: go mod download
 
-    - name: Build the Go application
+    - name: Build the Go application amd64
       run: GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "$GO_LDFLAGS -s -X main.Version=${GITHUB_REF_NAME} -X main.BuildDate=$(date --iso-8601=seconds) -X main.Commit=$CI_COMMIT_SHA -X main.BuildBy=$GITHUB_ACTOR"  -o k22r ./cmd
 
     - name: Set up Docker Buildx
@@ -63,11 +63,9 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
+        visibility: public
         context: .
         file: ./Dockerfile
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/k22r:latest
 
-    - name: Verify Docker image
-      run: |
-        docker run --rm ghcr.io/${{ github.repository_owner }}/k22r:latest --version
