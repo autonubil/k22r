@@ -25,30 +25,6 @@ rules:
 
 ---
 
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: k22r
-  namespace: kube-system
-  labels:
-    release: kps
-    app.kubernetes.io/component: metrics
-    app.kubernetes.io/name: k22r
-spec:
-  jobLabel: k22r
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: metrics
-      app.kubernetes.io/name: k22r
-  namespaceSelector:
-    any: true
-    matchNames:
-    - kube-system
-  podMetricsEndpoints:
-  - port: prometheus
-    path: /metrics
-
----
 
 apiVersion: apps/v1
 kind: DaemonSet
@@ -90,7 +66,7 @@ spec:
               fieldRef:
                 fieldPath: spec.nodeName
           - name: K22R_COLLECTOR
-            value: elastiflow.opsanio.svc
+            value: 192.168.42.115
           - name: K22R_GROUP_NAME
             value: opsanio
         ports:

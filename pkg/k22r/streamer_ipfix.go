@@ -351,9 +351,10 @@ func (s *IpfixStreamer) initFilter() (string, error) {
 			if ip.IsGlobalUnicast() {
 				_, nodeSubnet, _ := net.ParseCIDR(ip.String() + "/24")
 				_, clusterSubnet, _ := net.ParseCIDR(ip.String() + "/16")
-				return fmt.Sprintf("not (dst net %s) or (dst net %s)", clusterSubnet, nodeSubnet), nil
+				// only record in one direction and filter out any ips ending with a "0" (probably the nodes flannel gateway)
+				return fmt.Sprintf("(not (dst net %s) or (dst net %s)) and (not (ip[30] == 0))", clusterSubnet, nodeSubnet), nil
 			}
 		}
 	}
-	return "", errors.New("no elegible ip found")
+	return "", errors.New("no eligible ip found")
 }

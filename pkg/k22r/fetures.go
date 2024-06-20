@@ -218,7 +218,7 @@ func (f *tcpConnectionClosed) Event(new interface{}, context *flows.EventContext
 		return
 	}
 
-	// server SYN-ACK response - the oposite of what we are looking for
+	// server SYN-ACK response - the opposite of what we are looking for
 	if tcp.SYN && tcp.ACK {
 		return
 	}
