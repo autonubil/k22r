@@ -7,24 +7,6 @@ metadata:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: k22r-psp-role
-  namespace: kube-system
-rules:
-- apiGroups:
-  - policy
-  - extensions
-  resourceNames:
-  - k22r-psp
-  resources:
-  - podsecuritypolicies
-  verbs:
-  - use
-
----
-
 
 apiVersion: apps/v1
 kind: DaemonSet

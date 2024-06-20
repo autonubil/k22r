@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CN-TU/go-ipfix"
@@ -60,7 +61,7 @@ var rootCmd = &cobra.Command{
 	Long:  `export k8s cluster internal ip traffic as ipfix`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if showVersionAndExit {
-			return 
+			return
 		}
 		// Profiling
 		if cpuprofile != "" {
@@ -86,6 +87,15 @@ var rootCmd = &cobra.Command{
 		// /RUN
 		streamer := k22r.NewIpfixStreamer()
 		if collector != "" {
+			addrAndPort := strings.Split(collector, ":")
+			if len(addrAndPort) == 2 {
+				collector = addrAndPort[0]
+				port, err := strconv.Atoi(addrAndPort[1])
+				if err != nil {
+					log.Fatal("could not parse address:", err)
+				}
+				streamer.Config.CollectorPort = uint16(port)
+			}
 			streamer.Config.Collector = collector
 		}
 
