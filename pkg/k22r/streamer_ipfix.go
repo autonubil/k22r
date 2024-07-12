@@ -24,7 +24,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const DEFAULT_COLLECTOR = "elastiflow.opsanio.svc" // TODO: LOCALHOST
+const DEFAULT_COLLECTOR = "ipfix.opsanio.svc" // TODO: LOCALHOST
 const DEFAULT_OBSERVATION_ID = 8
 const DEFAULT_OBSERVATION_NAME = "kubernetes"
 
@@ -72,7 +72,7 @@ func NewIpfixStreamer() *IpfixStreamer {
 			IdleTimeout:           60,
 			Interval:              300,
 			AllowZero:             false,
-			Bidirectional:         true,
+			Bidirectional:         false,
 			CollectorPort:         4739,
 		},
 		Verbose: false,
@@ -270,6 +270,8 @@ func (s *IpfixStreamer) Start() error {
 		features = append(features, registerStringFeature("applicationGroupName", s.Config.GroupName))
 	}
 
+	features = append(features, "paddingOctets")
+
 	// features = tst
 	controlFeatures := []string{"_tcpConnectionClosed"}
 
@@ -292,13 +294,6 @@ func (s *IpfixStreamer) Start() error {
 
 	engine := packet.NewEngine(int(maxPacket), flowtable, filters, sources, labels)
 	recordList.Init()
-
-	// start exporter Nat?
-	if s.Config.ExporterIp != "" {
-		//cfg := NewMasqConfig(true)
-		//daemon := NewMasqDaemon(cfg)
-		//daemon.Run()
-	}
 
 	var stopped flows.DateTimeNanoseconds
 	go func() {

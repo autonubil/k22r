@@ -342,7 +342,35 @@ func (f *interfaceProperty) Event(new interface{}, context *flows.EventContext, 
 			}
 		}
 	}
+}
 
+/////////////
+
+type paddingProperty struct {
+	flows.BaseFeature
+	resolved bool
+}
+
+func newPaddingProperty() flows.Feature {
+	f := &paddingProperty{}
+	f.init()
+	return f
+}
+func (f *paddingProperty) init() error {
+
+	return nil
+}
+
+func (f *paddingProperty) Start(ctx *flows.EventContext) {
+	f.BaseFeature.Start(ctx)
+	f.resolved = false
+}
+
+func (f *paddingProperty) Event(new interface{}, context *flows.EventContext, src interface{}) {
+	if f.resolved {
+		return
+	}
+	f.resolved = true
 }
 
 func init() {
@@ -355,6 +383,8 @@ func init() {
 	flows.RegisterStandardFeature("vlanId", flows.FlowFeature, func() flows.Feature { return newInterfaceProperty(InterfacePropertyTypeVLAN) }, flows.RawPacket)
 
 	flows.RegisterControlFeature("_tcpConnectionClosed", "abort flow if tcp connection is done", func() flows.Feature { return &tcpConnectionClosed{pos: 0, history: make([]byte, 4)} })
+
+	flows.RegisterStandardFeature("paddingOctets", flows.FlowFeature, func() flows.Feature { return newPaddingProperty() }, flows.RawPacket)
 
 }
 
