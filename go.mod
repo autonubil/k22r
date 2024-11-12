@@ -12,7 +12,7 @@ require (
 	github.com/CN-TU/go-flows v0.0.0-20230313083432-9f5628c12456
 	github.com/CN-TU/go-ipfix v0.0.0-20240611191116-e1d5a30c73c3
 	github.com/getsentry/sentry-go v0.28.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.1
 	github.com/spf13/cobra v1.8.1
